@@ -2,13 +2,13 @@
 
 # Llista de serveis a comprovar
 services=(
-  "/usr/lib/systemd/systemd-journald"
-  "/usr/lib/systemd/systemd-logind"
-  "/usr/bin/dbus-broker-launch --scope system --audit"
-  "/opt/dell/srvadmin/sbin/dsm_sa_eventmgrd"
-  "/opt/dell/srvadmin/sbin/dsm_sa_datamgrd"
-  "/opt/dell/srvadmin/sbin/dsm_sa_snmpd"
-  "/opt/dell/srvadmin/sbin/dsm_om_connsvcd -run"
+  "systemd-journald"
+  "/systemd-logind"
+  "dbus-broker-launch"
+  "dsm_sa_eventmgrd"
+  "dsm_sa_datamgrd"
+  "dsm_sa_snmpd"
+  "dsm_om_connsvcd"
 )
 
 # Funció per comprovar si un servei està actiu
