@@ -43,12 +43,11 @@ RUN apt-get clean && \
 # USER nobody
 
 # Crea els usuaris admin i operator amb la contrasenya perdefecte
-RUN useradd -m admin && echo "admin:84356Dçrft·" | chpasswd
+RUN useradd -m admin && echo "admin:84356Drft" | chpasswd
 RUN useradd -m -g users operator && echo "operator:84356Dçrft·" | chpasswd
 
 # Modifica el fitxer omarolemap
-RUN sed -i '/^root.*Administrator$/d' /opt/dell/srvadmin/etc/omarolemap && \
-    echo -e "\nadmin\t*\tAdministrator\noperator\t*\tUser" >> /opt/dell/srvadmin/etc/omarolemap
+RUN echo -e "\nadmin\t*\tAdministrator\noperator\t*\tUser" >> /opt/dell/srvadmin/etc/omarolemap
 
 # Copia l'script d'inicialització al contenidor
 COPY start_services.sh /usr/local/bin/start_services.sh
