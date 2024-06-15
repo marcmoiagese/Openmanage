@@ -15,7 +15,7 @@ RUN sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/almalinux-crb.repo && \
     ln -s /usr/bin/microdnf /usr/bin/dnf && \
     ln -s /usr/bin/microdnf /usr/bin/yum && \
     dnf -y update && \
-    dnf -y install passwd procps kmod tar which && \
+    dnf -y install passwd procps kmod tar which net-tools && \
     cat /tmp/copygpgkeys.sh-tmp-t0quen | bash && \
     sed -i 's/IMPORT_GPG_CONFIRMATION="na"/IMPORT_GPG_CONFIRMATION="yes"/' /tmp/bootstrap.sh-tmp-t0quen && \
     cat /tmp/bootstrap.sh-tmp-t0quen | bash && \
