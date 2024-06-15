@@ -13,7 +13,8 @@ RUN apt-get update && \
     wget \
     apt-transport-https \
     gnupg2 \
-    curl
+    curl \
+    net-tools
 
 # Afegeix el repositori de Dell OpenManage
 RUN echo 'deb http://linux.dell.com/repo/community/openmanage/11010/jammy jammy main' | tee -a /etc/apt/sources.list.d/linux.dell.com.sources.list
@@ -22,7 +23,7 @@ RUN echo 'deb http://linux.dell.com/repo/community/openmanage/11010/jammy jammy 
 RUN wget https://linux.dell.com/repo/pgp_pubkeys/0x1285491434D8786F.asc && \
     apt-key add 0x1285491434D8786F.asc
 
-# Descarrega i instal·la el paquet srvadmin-all evitant l'ús de systemctl
+# Descarrega i instal·la el paquet dbus
 RUN apt-get update && apt-get install -y \
     dbus \
     && apt-get clean \
@@ -32,7 +33,7 @@ RUN apt-get update && apt-get install -y \
 RUN echo '#!/bin/bash\nexit 0' > /usr/bin/systemctl && chmod +x /usr/bin/systemctl
 
 # Instal·la el paquet srvadmin-all
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y srvadmin-all
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y srvadmin-all srvadmin-cm
 
 # Neteja els arxius de configuració que no són necessaris per a reduir la mida de la imatge
 RUN apt-get clean && \
