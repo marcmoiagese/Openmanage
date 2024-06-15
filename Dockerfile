@@ -24,7 +24,6 @@ RUN sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/almalinux-crb.repo && \
     rm -Rfv /usr/lib/systemd/system/autovt@.service /usr/lib/systemd/system/getty@.service /tmp/bootstrap.sh-tmp-t0quen /tmp/copygpgkeys.sh-tmp-t0quen
 
 # copiem es scripts locals"
-COPY rc.local /etc/rc.local
 COPY start_services.sh /usr/local/bin/start_services.sh
 COPY healthcheck.sh /usr/local/bin/healthcheck.sh
 
@@ -32,7 +31,7 @@ COPY healthcheck.sh /usr/local/bin/healthcheck.sh
 RUN chmod +x /usr/local/bin/start_services.sh /usr/local/bin/healthcheck.sh
 
 # Afegeix un health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD /usr/local/bin/health_check.sh
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD /usr/local/bin/healthcheck.sh
 
 # arranquem l'aplicacio
 CMD ["/usr/local/bin/start_services.sh"]
