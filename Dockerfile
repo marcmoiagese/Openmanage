@@ -34,4 +34,4 @@ RUN chmod +x /usr/local/bin/start_services.sh /usr/local/bin/healthcheck.sh
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD /usr/local/bin/healthcheck.sh
 
 # arranquem l'aplicacio
-CMD ["/bin/bash", "-c", "/usr/local/bin/start_services.sh && pwsh -Command 'while ($true) { Start-Sleep -Seconds 3600 }'"]
+CMD ["/bin/bash", "-c", "/usr/local/bin/start_services.sh && tail -f /dev/null"]
