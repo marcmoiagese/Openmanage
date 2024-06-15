@@ -1,56 +1,30 @@
-# Utilitzem la imatge oficial d'Ubuntu 22.04 com a base
-FROM ubuntu:22.04
-USER root
+FROM almalinux:9.3-minimal
+MAINTAINER Marc Moya Gesse
+LABEL org.opencontainers.image.authors "Marc Moya Gesse"
+LABEL org.opencontainers.image.description "Dell OpenManage Server Administrator in Docker."
+LABEL org.opencontainers.image.url "https://github.com/marcmoiagese/Openmanage"
 
-# Establim fus horari
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=Europe/Andorra
+# Variables d'entorn
+ENV PATH $PATH:/opt/dell/srvadmin/bin:/opt/dell/srvadmin/sbin
+ENV SYSTEMCTL_SKIP_REDIRECT=1
 
-# Actualitzem el sistema i instal·lem les dependencies necessaries
-RUN apt-get update && \
-    apt-get install -y \
-    software-properties-common \
-    wget \
-    apt-transport-https \
-    gnupg2 \
-    curl \
-    net-tools
+# Instalan paquets i requisits
+ADD https://linux.dell.com/repo/hardware/dsu/bootstrap.cgi /tmp/bootstrap.sh-tmp-t0quen
+ADD https://linux.dell.com/repo/hardware/dsu/copygpgkeys.sh /tmp/copygpgkeys.sh-tmp-t0quen
+RUN sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/almalinux-crb.repo && \
+    ln -s /usr/bin/microdnf /usr/bin/dnf && \
+    ln -s /usr/bin/microdnf /usr/bin/yum && \
+    dnf -y update && \
+    dnf -y install passwd procps kmod tar which && \
+    cat /tmp/copygpgkeys.sh-tmp-t0quen | bash && \
+    sed -i 's/IMPORT_GPG_CONFIRMATION="na"/IMPORT_GPG_CONFIRMATION="yes"/' /tmp/bootstrap.sh-tmp-t0quen && \
+    cat /tmp/bootstrap.sh-tmp-t0quen | bash && \
+    dnf -y install srvadmin-all dell-system-update-2.0.2.3-23.11.00 && \
+    dnf clean all && \
+    rm -Rfv /usr/lib/systemd/system/autovt@.service /usr/lib/systemd/system/getty@.service /tmp/bootstrap.sh-tmp-t0quen /tmp/copygpgkeys.sh-tmp-t0quen
 
-# Afegeix el repositori de Dell OpenManage
-RUN echo 'deb http://linux.dell.com/repo/community/openmanage/11010/jammy jammy main' | tee -a /etc/apt/sources.list.d/linux.dell.com.sources.list
-
-# Descarrega i afegeix la clau PGP per al repositori de Dell
-RUN wget https://linux.dell.com/repo/pgp_pubkeys/0x1285491434D8786F.asc && \
-    apt-key add 0x1285491434D8786F.asc
-
-# Descarrega i instal·la el paquet dbus
-RUN apt-get update && apt-get install -y \
-    dbus \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Crea un script de placeholder per systemctl
-RUN echo '#!/bin/bash\nexit 0' > /usr/bin/systemctl && chmod +x /usr/bin/systemctl
-
-# Instal·la el paquet srvadmin-all
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y srvadmin-all
-
-# Neteja els arxius de configuració que no són necessaris per a reduir la mida de la imatge
-RUN apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    rm -f 0x1285491434D8786F.asc
-
-# Especifica l'usuari per defecte (opcional, si no es necessita executar com a root)
-# USER nobody
-
-# Crea els usuaris admin i operator amb la contrasenya perdefecte
-RUN useradd -m admin && echo "admin:84356Drft" | chpasswd
-RUN useradd -m -g users operator && echo "operator:84356Dçrft·" | chpasswd
-
-# Modifica el fitxer omarolemap
-RUN echo -e "\nadmin\t*\tAdministrator\noperator\t*\tUser" >> /opt/dell/srvadmin/etc/omarolemap
-
-# Copia l'script d'inicialització al contenidor
+# copiem es scripts locals"
+COPY rc.local /etc/rc.local
 COPY start_services.sh /usr/local/bin/start_services.sh
 COPY healthcheck.sh /usr/local/bin/healthcheck.sh
 
@@ -58,7 +32,7 @@ COPY healthcheck.sh /usr/local/bin/healthcheck.sh
 RUN chmod +x /usr/local/bin/start_services.sh /usr/local/bin/healthcheck.sh
 
 # Afegeix un health check
-HEALTHCHECK CMD /usr/local/bin/healthcheck.sh
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD /usr/local/bin/health_check.sh
 
-# Comanda per defecte per executar l'script d'inicialització
+# arranquem l'aplicacio
 CMD ["/usr/local/bin/start_services.sh"]
