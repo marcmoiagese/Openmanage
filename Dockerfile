@@ -1,4 +1,4 @@
-FROM almalinux:9.3-minimal
+FROM almalinux:9.3-minimal-20231124
 MAINTAINER Marc Moya Gesse
 LABEL org.opencontainers.image.authors "Marc Moya Gesse"
 LABEL org.opencontainers.image.description "Dell OpenManage Server Administrator in Docker."
@@ -6,7 +6,6 @@ LABEL org.opencontainers.image.url "https://github.com/marcmoiagese/Openmanage"
 
 # Variables d'entorn
 ENV PATH $PATH:/opt/dell/srvadmin/bin:/opt/dell/srvadmin/sbin
-ENV SYSTEMCTL_SKIP_REDIRECT=1
 
 # Instalan paquets i requisits
 ADD https://linux.dell.com/repo/hardware/dsu/bootstrap.cgi /tmp/bootstrap.sh-tmp-t0quen
@@ -23,20 +22,16 @@ RUN sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/almalinux-crb.repo && \
     dnf clean all && \
     rm -Rfv /usr/lib/systemd/system/autovt@.service /usr/lib/systemd/system/getty@.service /tmp/bootstrap.sh-tmp-t0quen /tmp/copygpgkeys.sh-tmp-t0quen
 
-RUN cat <<EOF > /etc/rc.local
-#!/bin/sh
-/opt/dell/srvadmin/sbin/srvadmin-services.sh restart
-EOF
+COPY rc.local /etc/rc.local
 
-# copiem es scripts locals"
+ENV SYSTEMCTL_SKIP_REDIRECT=1
+
 COPY start_services.sh /usr/local/bin/start_services.sh
 COPY healthcheck.sh /usr/local/bin/healthcheck.sh
-
-# Afegeix permisos d'execució als scripts
-RUN chmod +x /usr/local/bin/start_services.sh /usr/local/bin/healthcheck.sh
-
+RUN chmod +x /usr/local/bin/start_services.sh
+RUN chmod +x /usr/local/bin/healthcheck.sh
 # Afegeix un health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD /usr/local/bin/healthcheck.sh
+HEALTHCHECK CMD /usr/local/bin/healthcheck.sh
 
 # arranquem l'aplicacio
-CMD ["/bin/bash", "-c", "/usr/local/bin/start_services.sh && tail -f /dev/null"]
+CMD ["/usr/local/bin/start_services.sh"]
