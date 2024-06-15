@@ -23,6 +23,11 @@ RUN sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/almalinux-crb.repo && \
     dnf clean all && \
     rm -Rfv /usr/lib/systemd/system/autovt@.service /usr/lib/systemd/system/getty@.service /tmp/bootstrap.sh-tmp-t0quen /tmp/copygpgkeys.sh-tmp-t0quen
 
+RUN cat <<EOF > /etc/rc.local
+#!/bin/sh
+/opt/dell/srvadmin/sbin/srvadmin-services.sh restart
+EOF
+
 # copiem es scripts locals"
 COPY start_services.sh /usr/local/bin/start_services.sh
 COPY healthcheck.sh /usr/local/bin/healthcheck.sh

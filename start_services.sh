@@ -34,4 +34,4 @@ rm -Rf /tmp/* /var/tmp/*
 echo "Starting init..."
 exec /sbin/init
 
-/opt/dell/srvadmin/sbin/srvadmin-services.sh restart
+#/opt/dell/srvadmin/sbin/srvadmin-services.sh restart
