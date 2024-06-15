@@ -44,7 +44,7 @@ RUN apt-get clean && \
 
 # Crea els usuaris admin i operator amb la contrasenya perdefecte
 RUN useradd -m admin && echo "admin:84356Dçrft·" | chpasswd
-RUN useradd -m operator && echo "operator:84356Dçrft·" | chpasswd
+RUN useradd -m -g users operator && echo "operator:84356Dçrft·" | chpasswd
 
 # Modifica el fitxer omarolemap
 RUN sed -i '/^root.*Administrator$/d' /opt/dell/srvadmin/etc/omarolemap && \
