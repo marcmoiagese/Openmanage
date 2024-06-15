@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y \
 RUN echo '#!/bin/bash\nexit 0' > /usr/bin/systemctl && chmod +x /usr/bin/systemctl
 
 # Instal·la el paquet srvadmin-all
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y srvadmin-all srvadmin-cm
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y srvadmin-all
 
 # Neteja els arxius de configuració que no són necessaris per a reduir la mida de la imatge
 RUN apt-get clean && \
