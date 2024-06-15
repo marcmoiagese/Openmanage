@@ -48,7 +48,7 @@ RUN useradd -m -g users operator && echo "operator:84356Dçrft·" | chpasswd
 
 # Modifica el fitxer omarolemap
 RUN sed -i '/^root.*Administrator$/d' /opt/dell/srvadmin/etc/omarolemap && \
-    echo -e "admin\t*\tAdministrator\noperator\t*\tUser" >> /opt/dell/srvadmin/etc/omarolemap
+    echo -e "\nadmin\t*\tAdministrator\noperator\t*\tUser" >> /opt/dell/srvadmin/etc/omarolemap
 
 # Copia l'script d'inicialització al contenidor
 COPY start_services.sh /usr/local/bin/start_services.sh
