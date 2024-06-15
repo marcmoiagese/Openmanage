@@ -31,6 +31,7 @@ fi
 echo "Clearing old tmp files..."
 rm -Rf /tmp/* /var/tmp/*
 
-echo "Starting init..."
-exec /sbin/init
-exec /opt/dell/srvadmin/sbin/srvadmin-services.sh restart
+sh /opt/dell/srvadmin/sbin/srvadmin-services.sh restart
+
+#echo "Starting init..."
+#exec /sbin/init
