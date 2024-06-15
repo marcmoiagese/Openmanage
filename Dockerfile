@@ -42,6 +42,14 @@ RUN apt-get clean && \
 # Especifica l'usuari per defecte (opcional, si no es necessita executar com a root)
 # USER nobody
 
+# Crea els usuaris admin i operator amb la contrasenya perdefecte
+RUN useradd -m admin && echo "admin:84356Dçrft·" | chpasswd
+RUN useradd -m operator && echo "operator:84356Dçrft·" | chpasswd
+
+# Modifica el fitxer omarolemap
+RUN sed -i '/^root.*Administrator$/d' /opt/dell/srvadmin/etc/omarolemap && \
+    echo -e "admin\t*\tAdministrator\noperator\t*\tUser" >> /opt/dell/srvadmin/etc/omarolemap
+
 # Copia l'script d'inicialització al contenidor
 COPY start_services.sh /usr/local/bin/start_services.sh
 COPY healthcheck.sh /usr/local/bin/healthcheck.sh
